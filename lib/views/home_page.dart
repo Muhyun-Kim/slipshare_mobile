@@ -18,6 +18,11 @@ class _HomePageState extends State<HomePage> {
         title: Text(widget.title),
       ),
       body: Center(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => {
+          print("object"),
+        },
+      ),
     );
   }
 }
