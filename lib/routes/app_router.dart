@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:slipshare_mobile/views/create_account_page.dart';
 import 'package:slipshare_mobile/views/home_page.dart';
 import 'package:slipshare_mobile/views/login_page.dart';
 
@@ -13,6 +14,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginPage(),
+    ),
+    GoRoute(
+      path: '/create-account',
+      builder: (context, state) => const CreateAccountPage(),
     ),
   ],
 );
