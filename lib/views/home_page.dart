@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:slipshare_mobile/controllers/auth_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -18,7 +19,14 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: const Center(),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () async {
+            await AuthController.logout();
+          },
+          child: Text('logout'),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {
           context.go('/login'),

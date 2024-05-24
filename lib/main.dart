@@ -5,7 +5,7 @@ import 'package:slipshare_mobile/routes/app_router.dart';
 import 'package:slipshare_mobile/views/home_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
   await Supabase.initialize(
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'slipshare',
       theme: ThemeData(
-        colorScheme: ColorScheme.dark(),
+        colorScheme: const ColorScheme.dark(),
         useMaterial3: true,
       ),
       routerDelegate: router.routerDelegate,

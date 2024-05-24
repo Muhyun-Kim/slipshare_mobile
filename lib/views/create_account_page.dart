@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:slipshare_mobile/controllers/auth_controller.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
@@ -10,12 +11,14 @@ class CreateAccountPage extends StatefulWidget {
 
 class _CreateAccountPageState extends State<CreateAccountPage> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordConfirmController = TextEditingController();
 
   @override
   void dispose() {
+    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _passwordConfirmController.dispose();
@@ -24,9 +27,41 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   }
 
   void _submitForm() {
-    if (_formKey.currentState!.validate())
-      print('Email: ${_emailController.text}');
-    print('Password: ${_passwordController.text}');
+    if (_formKey.currentState!.validate()) {
+      AuthController.createAccount(
+        email: _emailController.text,
+        username: _usernameController.text,
+        password: _passwordController.text,
+        onError: (err) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('アカウント作成に失敗しました'),
+            ),
+          );
+        },
+        onSuccess: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('アカウント作成に成功しました'),
+              action: SnackBarAction(
+                label: 'ログイン画面に戻る',
+                onPressed: () => context.go('/login'),
+              ),
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  String? _usernameValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'ユーザー名を入力してください';
+    }
+    if (value.length < 3 || value.length > 12) {
+      return 'ユーザー名は3文字以上12文字以下にしてください';
+    }
+    return null;
   }
 
   String? _emailValidator(String? value) {
@@ -69,6 +104,13 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'ユーザー名',
+                ),
+                validator: _usernameValidator,
+              ),
+              TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(
                   labelText: 'メールアドレス',
@@ -96,12 +138,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               ),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: Text('会員登録'),
+                child: const Text('会員登録'),
               ),
-              Text('すでにアカウントをお持ちですか？'),
+              const Text('すでにアカウントをお持ちですか？'),
               ElevatedButton(
                 onPressed: () => context.go('/login'),
-                child: Text('ログイン'),
+                child: const Text('ログイン'),
               ),
             ],
           ),
