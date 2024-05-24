@@ -27,6 +27,23 @@ class AuthService {
     }
   }
 
+  static Future<void> login({
+    required String email,
+    required String password,
+  }) async {
+    final AuthResponse res = await supabase.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+    if (res.user == null) {
+      throw Exception('ログインに失敗しました');
+    }
+    final User supabaseUser = res.user!;
+    final user_id = supabaseUser.id;
+    final user =
+        await supabase.from('users').select('*').eq('user_id', user_id);
+  }
+
   static Future<void> logout() async {
     supabase.auth.signOut();
   }

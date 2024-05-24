@@ -18,15 +18,29 @@ class AuthController {
       onSuccess();
     } catch (e) {
       onError(e.toString());
-      print(e);
+    }
+  }
+
+  static Future<void> login({
+    required String email,
+    required String password,
+    required Function(String error) onError,
+    required Function onSuccess,
+  }) async {
+    try {
+      await AuthService.login(
+        email: email,
+        password: password,
+      );
+      onSuccess();
+    } catch (e) {
+      onError(e.toString());
     }
   }
 
   static Future<void> logout() async {
     try {
       await AuthService.logout();
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 }
