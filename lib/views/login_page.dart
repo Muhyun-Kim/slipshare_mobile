@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slipshare_mobile/controllers/auth_controller.dart';
+import 'package:slipshare_mobile/services/supabase/supabase_client.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formkey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -21,19 +23,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _submitForm() {
-    AuthController.login(
-        email: _emailController.text,
-        password: _passwordController.text,
-        onError: (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('ログインに失敗しました'),
-            ),
-          );
-        },
-        onSuccess: () {
-          context.go('/');
-        });
+    if (_formkey.currentState!.validate()) {
+      final authcontroller = ref.read(authControllerProvider);
+      authcontroller.login(
+          email: _emailController.text,
+          password: _passwordController.text,
+          onError: (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('ログインに失敗しました'),
+              ),
+            );
+          },
+          onSuccess: () {
+            context.go('/');
+          });
+    }
   }
 
   String? _emailValidator(String? value) {
@@ -86,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go('/create-account'),
+        onPressed: () => supabase.auth.signOut(),
       ),
     );
   }

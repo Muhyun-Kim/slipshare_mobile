@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slipshare_mobile/controllers/auth_controller.dart';
 
-class CreateAccountPage extends StatefulWidget {
+class CreateAccountPage extends ConsumerStatefulWidget {
   const CreateAccountPage({super.key});
 
   @override
-  State<CreateAccountPage> createState() => _CreateAccountPageState();
+  ConsumerState<CreateAccountPage> createState() => _CreateAccountPageState();
 }
 
-class _CreateAccountPageState extends State<CreateAccountPage> {
+class _CreateAccountPageState extends ConsumerState<CreateAccountPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -28,7 +29,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      AuthController.createAccount(
+      final authcontroller = ref.read(authControllerProvider);
+      authcontroller.createAccount(
         email: _emailController.text,
         username: _usernameController.text,
         password: _passwordController.text,

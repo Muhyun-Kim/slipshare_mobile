@@ -1,7 +1,12 @@
-import 'package:slipshare_mobile/services/supabase/auth_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:slipshare_mobile/providers/auth_provider.dart';
 
 class AuthController {
-  static Future<void> createAccount({
+  final AuthNotifier authNotifier;
+
+  AuthController(this.authNotifier);
+
+  Future<void> createAccount({
     required String email,
     required String username,
     String? detail,
@@ -10,27 +15,23 @@ class AuthController {
     required Function onSuccess,
   }) async {
     try {
-      await AuthService.createAccount(
-        email: email,
-        username: username,
-        password: password,
-      );
+      await authNotifier.createAccount(email, password, username, detail ?? '');
       onSuccess();
     } catch (e) {
       onError(e.toString());
     }
   }
 
-  static Future<void> login({
+  Future<void> login({
     required String email,
     required String password,
     required Function(String error) onError,
     required Function onSuccess,
   }) async {
     try {
-      await AuthService.login(
-        email: email,
-        password: password,
+      await authNotifier.login(
+        email,
+        password,
       );
       onSuccess();
     } catch (e) {
@@ -38,9 +39,20 @@ class AuthController {
     }
   }
 
-  static Future<void> logout() async {
+  Future<void> logout({
+    required Function(String error) onError,
+    required Function onSuccess,
+  }) async {
     try {
-      await AuthService.logout();
-    } catch (e) {}
+      await authNotifier.logout();
+      onSuccess();
+    } catch (e) {
+      onError(e.toString());
+    }
   }
 }
+
+final authControllerProvider = Provider<AuthController>((ref) {
+  final authNotifier = ref.watch(authNotifierProvider.notifier);
+  return AuthController(authNotifier);
+});

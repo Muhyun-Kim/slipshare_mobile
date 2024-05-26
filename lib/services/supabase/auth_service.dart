@@ -1,50 +1,46 @@
 import 'package:slipshare_mobile/models/user_model.dart';
-import 'package:slipshare_mobile/services/supabase/supabase_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
-  static Future<void> createAccount({
-    required String email,
-    required String username,
-    String? detail,
-    required String password,
-  }) async {
+  final SupabaseClient supabase;
+  AuthService(this.supabase);
+
+  Future<UserModel?> createAccount(
+      String email, String password, String username, String detail) async {
     final AuthResponse res =
         await supabase.auth.signUp(email: email, password: password);
-    print('supabase:${res.user}');
-    if (res.user == null) {
-      throw Exception('アカウント作成に失敗しました');
-    } else {
-      final User supabaseUser = res.user!;
-      final user_id = supabaseUser.id;
-      final user = UserModel(
-        id: 0,
-        username: username,
-        user_id: user_id,
-        detail: "",
-      );
-      await supabase.from('users').insert(user.toJson());
-    }
-  }
 
-  static Future<void> login({
-    required String email,
-    required String password,
-  }) async {
-    final AuthResponse res = await supabase.auth.signInWithPassword(
-      email: email,
-      password: password,
+    if (res.user == null) {
+      return throw Exception('アカウント作成に失敗しました');
+    }
+    final user = UserModel(
+      id: 0,
+      username: username,
+      user_id: res.user!.id,
+      detail: "",
     );
-    if (res.user == null) {
-      throw Exception('ログインに失敗しました');
+    final userRes = await supabase.from('users').insert(user.toJson());
+    if (userRes == null) {
+      return throw Exception('アカウント作成に失敗しました');
     }
-    final User supabaseUser = res.user!;
-    final user_id = supabaseUser.id;
-    final user =
-        await supabase.from('users').select('*').eq('user_id', user_id);
+    return UserModel.fromJson(userRes.data[0]);
   }
 
-  static Future<void> logout() async {
-    supabase.auth.signOut();
+  Future<UserModel?> login(String email, String password) async {
+    final AuthResponse res = await supabase.auth
+        .signInWithPassword(email: email, password: password);
+    if (res.user == null) {
+      return throw Exception('ログインに失敗しました');
+    }
+    final user = await supabase
+        .from('user')
+        .select()
+        .eq('user_id', res.user!.id)
+        .single();
+    return UserModel.fromJson(user);
+  }
+
+  Future<void> logout() async {
+    await supabase.auth.signOut();
   }
 }
