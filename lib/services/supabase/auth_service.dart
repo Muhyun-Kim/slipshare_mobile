@@ -23,21 +23,23 @@ class AuthService {
     if (userRes == null) {
       return throw Exception('アカウント作成に失敗しました');
     }
-    return UserModel.fromJson(userRes.data[0]);
+    return UserModel.fromJson(userRes.data);
   }
 
   Future<UserModel?> login(String email, String password) async {
     final AuthResponse res = await supabase.auth
         .signInWithPassword(email: email, password: password);
     if (res.user == null) {
+      print('로그인 에러:${res}');
       return throw Exception('ログインに失敗しました');
     }
     final user = await supabase
-        .from('user')
+        .from('users')
         .select()
         .eq('user_id', res.user!.id)
         .single();
-    return UserModel.fromJson(user);
+    final user_json = UserModel.fromJson(user);
+    return user_json;
   }
 
   Future<void> logout() async {

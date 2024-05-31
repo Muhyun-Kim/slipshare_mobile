@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slipshare_mobile/controllers/auth_controller.dart';
+import 'package:slipshare_mobile/providers/auth_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -11,7 +12,6 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  @override
   void _logout() {
     final authController = ref.read(authControllerProvider);
     authController.logout(
@@ -26,16 +26,47 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authNotifierProvider);
+    print(authState.user?.username);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('home'),
+        title: const Text('ホーム'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.red,
+              ),
+              child: Center(
+                child: Text(
+                  authState.user!.username,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+              ),
+            ),
+            Column(
+              children: [
+                ListTile(
+                  title: const Text('logout'),
+                  onTap: _logout,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: ElevatedButton(
           onPressed: _logout,
-          child: Text('logout'),
+          child: const Text('logout'),
         ),
       ),
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:slipshare_mobile/providers/auth_provider.dart';
 import 'package:slipshare_mobile/routes/app_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

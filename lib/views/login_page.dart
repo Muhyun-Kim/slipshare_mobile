@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slipshare_mobile/controllers/auth_controller.dart';
-import 'package:slipshare_mobile/services/supabase/supabase_client.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -51,6 +50,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return null;
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -79,7 +79,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: Text('ログイン'),
+                child: const Text('ログイン'),
               ),
               const Text('アカウントをお持ちでないですか？'),
               ElevatedButton(
@@ -89,9 +89,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => supabase.auth.signOut(),
       ),
     );
   }

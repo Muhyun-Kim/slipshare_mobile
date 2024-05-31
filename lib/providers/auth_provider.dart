@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:slipshare_mobile/models/auth_state.dart' as local;
 import 'package:slipshare_mobile/models/user_model.dart';
 import 'package:slipshare_mobile/services/supabase/auth_service.dart';
 import 'package:slipshare_mobile/services/supabase/supabase_client.dart';
-import 'package:slipshare_mobile/models/auth_state.dart' as local;
 
 final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(supabase);
@@ -18,7 +18,18 @@ class AuthNotifier extends StateNotifier<local.AuthState> {
   final AuthService authService;
 
   AuthNotifier(this.authService)
-      : super(const local.AuthState(isAuthenticated: false));
+      : super(const local.AuthState(isAuthenticated: false)) {
+    _checkInitialAuthState();
+  }
+  Future<void> _checkInitialAuthState() async {
+    final user = await supabase.auth.currentUser;
+    if (user != null) {
+      final userRes =
+          await supabase.from('users').select().eq('user_id', user.id).single();
+      final user_json = UserModel.fromJson(userRes);
+      state = state.copyWith(isAuthenticated: true, user: user_json);
+    }
+  }
 
   Future<void> createAccount(
       String email, String password, String username, String detail) async {
