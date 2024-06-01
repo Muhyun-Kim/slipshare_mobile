@@ -29,7 +29,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
-    print(authState.user?.username);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -54,6 +53,14 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             Column(
               children: [
+                ListTile(
+                  title: const Text('プロフィール'),
+                  onTap: () => context.go('/profile'),
+                ),
+                ListTile(
+                  title: const Text('レシピ'),
+                  onTap: () => context.go('/recipes'),
+                ),
                 ListTile(
                   title: const Text('logout'),
                   onTap: _logout,
